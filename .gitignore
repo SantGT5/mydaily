@@ -1,0 +1,44 @@
+# Binaries for programs and plugins
+tmp
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Virtual Environment
+venv/
+env/
+.env
+.vscode/
+
+# PostgreSQL
+*.pgsql
+*.pgsql-journal
+*.psql
+*.psql-journal
+*.pid
+pgdata/
+
+# Ignore system and temporary files
+*.DS_Store
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.tmp
+*.swp
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -1,0 +1,19 @@
+FROM golang:1.26.2-alpine
+
+RUN apk add --no-cache gcc musl-dev
+ENV CGO_ENABLED=1
+ENV GIN_MODE=debug
+
+# Install tools
+RUN go install github.com/air-verse/air@v1.65.1
+
+WORKDIR /app
+
+COPY backend/go.mod backend/go.sum ./
+RUN go mod download && go mod verify
+
+COPY backend/ .
+
+EXPOSE 8080
+
+CMD ["air", "--build.cmd=go build -o ./tmp/mydaily ./main.go", "--build.entrypoint=./tmp/mydaily", "--build.exclude_dir=tmp,test"]

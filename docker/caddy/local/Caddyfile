@@ -1,0 +1,18 @@
+{
+	log {
+		level ERROR
+	}
+}
+
+mydaily.com {
+	tls internal
+
+	# Caddy status endpoint
+	redir /caddy-status /caddy-status/
+	respond /caddy-status/ "OK" 200
+
+	redir /api /api/ permanent
+	handle_path /api/* {
+		reverse_proxy backend:8080
+	}
+}

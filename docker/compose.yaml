@@ -1,0 +1,62 @@
+services:
+  backend:
+    container_name: backend
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT}
+      POSTGRES_URL: ${POSTGRES_URL}
+    networks:
+      - mydaily
+
+  postgres:
+    image: postgres:18.3-alpine
+    container_name: postgres
+    restart: always
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-h",
+          "localhost",
+          "-U",
+          "${POSTGRES_USER}",
+          "-d",
+          "${POSTGRES_DB}",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - mydaily
+
+  caddy:
+    image: caddy:2.11.2-alpine
+    container_name: caddy
+    depends_on:
+      - backend
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT}
+    networks:
+      - mydaily
+
+volumes:
+  postgres:
+  caddy_data:
+  caddy_config:
+
+networks:
+  mydaily:
