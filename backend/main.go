@@ -1,15 +1,28 @@
 package main
 
 import (
+	"database/sql"
+	"log"
+
+	"github.com/SantGT5/mydaily/api"
 	"github.com/SantGT5/mydaily/config"
-	"github.com/gin-gonic/gin"
+	db "github.com/SantGT5/mydaily/db/sqlc"
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	router := gin.Default()
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "pong"})
-	})
+	conn, err := sql.Open(config.DbDriver, config.PostgresURL+"?sslmode=disable")
 
-	router.Run(":" + config.BackendPort)
+	if err != nil {
+		log.Fatal("cannot connect to db: ", err)
+	}
+
+	store := db.NewStore(conn)
+	server := api.NewServer(store)
+
+	err = server.Start(":" + config.BackendPort)
+
+	if err != nil {
+		log.Fatal("cannot start server: ", err)
+	}
 }
