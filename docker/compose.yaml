@@ -10,6 +10,7 @@ services:
       POSTGRES_URL: ${POSTGRES_URL}
     networks:
       - mydaily
+      - database
 
   postgres:
     image: postgres:18.3-alpine
@@ -38,7 +39,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
-      - mydaily
+      - database
 
   caddy:
     image: caddy:2.11.2-alpine
@@ -60,3 +61,4 @@ volumes:
 
 networks:
   mydaily:
+  database:

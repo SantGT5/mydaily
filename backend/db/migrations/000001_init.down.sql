@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS model_keys;
+DROP TYPE IF EXISTS model_provider;
+DROP TABLE IF EXISTS users;

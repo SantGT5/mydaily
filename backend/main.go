@@ -1,6 +1,9 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/SantGT5/mydaily/config"
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
 	router := gin.Default()
@@ -10,5 +13,5 @@ func main() {
 		})
 	})
 
-	router.Run()
+	router.Run(":" + config.BackendPort)
 }

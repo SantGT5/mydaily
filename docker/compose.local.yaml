@@ -6,6 +6,10 @@ services:
     volumes:
       - ../backend:/app
 
+  postgres:
+    ports:
+      - 5432:5432
+
   caddy:
     volumes:
       - ./caddy/local/Caddyfile:/etc/caddy/Caddyfile
