@@ -1,8 +1,12 @@
 package api
 
 import (
+	"github.com/SantGT5/mydaily/config"
 	db "github.com/SantGT5/mydaily/db/sqlc"
+	_ "github.com/SantGT5/mydaily/docs"
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Server struct {
@@ -14,7 +18,12 @@ func NewServer(store db.Store) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 
-	router.POST("/users/create/", server.createUser)
+	users := router.Group("/users")
+	users.POST("/create/", server.createUser)
+
+	if config.IsDebug {
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	}
 
 	server.router = router
 

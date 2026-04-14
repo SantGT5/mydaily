@@ -1,3 +1,7 @@
+// @title MyDaily API
+// @version 1.0
+// @description HTTP API for MyDaily
+// @BasePath /api
 package main
 
 import (

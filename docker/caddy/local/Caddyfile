@@ -11,6 +11,9 @@ mydaily.com {
 	redir /caddy-status /caddy-status/
 	respond /caddy-status/ "OK" 200
 
+	redir /api/swagger /api/swagger/index.html 308
+	redir /api/swagger/ /api/swagger/index.html 308
+
 	redir /api /api/ permanent
 	handle_path /api/* {
 		reverse_proxy backend:8080

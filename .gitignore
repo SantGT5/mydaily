@@ -9,6 +9,9 @@ tmp
 # Test binary, built with `go test -c`
 *.test
 
+# Docs
+docs/
+
 # Virtual Environment
 venv/
 env/

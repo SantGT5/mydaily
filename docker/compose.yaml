@@ -6,6 +6,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      ENV: ${ENV}
       BACKEND_PORT: ${BACKEND_PORT}
       POSTGRES_URL: ${POSTGRES_URL}
     networks:
