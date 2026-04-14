@@ -6,6 +6,10 @@ sqlc: ## Generate SQLC code from SQL files
 	@docker exec -it backend sqlc generate
 .PHONY: sqlc
 
+mock: ## Generate mock data
+	@docker exec -it backend mockgen -package mockdb -destination db/mock/store.go github.com/SantGT5/mydaily/db/sqlc Store
+.PHONY: mock
+
 #----
 # Migration
 #----
