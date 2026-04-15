@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	db "github.com/SantGT5/mydaily/db/sqlc"
+	"github.com/SantGT5/mydaily/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -21,6 +22,10 @@ import (
 func (server *Server) createUser(ctx *gin.Context) {
 	var req CreateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		if fields, ok := utils.ValidationErrors(err); ok {
+			ctx.JSON(http.StatusBadRequest, ValidationErrorResponse{ValidationError: fields})
+			return
+		}
 		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
