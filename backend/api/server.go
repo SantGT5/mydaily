@@ -19,7 +19,10 @@ func NewServer(store db.Store) *Server {
 	router := gin.Default()
 
 	users := router.Group("/users")
-	users.POST("/create/", server.createUser)
+	{
+		users.POST("/", server.createUser)
+		users.GET("/:id/", server.getUserById)
+	}
 
 	if config.IsDebug {
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

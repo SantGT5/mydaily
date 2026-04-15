@@ -1,0 +1,34 @@
+package api
+
+import (
+	"time"
+
+	db "github.com/SantGT5/mydaily/db/sqlc"
+)
+
+type CreateUserRequest struct {
+	FullName string `json:"full_name" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+}
+
+type UserResponse struct {
+	ID              string `json:"id"`
+	FullName        string `json:"full_name"`
+	Email           string `json:"email"`
+	IsActive        bool   `json:"is_active"`
+	IsEmailVerified bool   `json:"is_email_verified"`
+	CreatedAt       string `json:"created_at"`
+	UpdatedAt       string `json:"updated_at"`
+}
+
+func UserToResponse(user db.User) UserResponse {
+	return UserResponse{
+		ID:              user.ID.String(),
+		FullName:        user.FullName,
+		Email:           user.Email,
+		IsActive:        user.IsActive,
+		IsEmailVerified: user.IsEmailVerified,
+		CreatedAt:       user.CreatedAt.Format(time.RFC3339Nano),
+		UpdatedAt:       user.UpdatedAt.Format(time.RFC3339Nano),
+	}
+}
