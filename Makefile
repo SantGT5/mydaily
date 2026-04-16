@@ -30,15 +30,6 @@ urls: ## Show the urls to the running applications
 # Others
 #----
 
-go-check-quality: ## Check code formatting
-	@gofmt -l ./backend
-	@if [ -n "$$(gofmt -l ./backend)" ]; then echo "Code is not formatted. Run 'make format' to format.\n"; exit 1; fi
-.PHONY: go-check-quality
-
-format: ## Code formatting
-	@gofmt -w ./backend
-.PHONY: format
-
 install: install/ci ## Install pre commit & npm dependencies & create .env file
 	@echo "\nInstalling pre-commit"
 	@pipx install pre-commit
