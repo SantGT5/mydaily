@@ -9,6 +9,13 @@ services:
       ENV: ${ENV}
       BACKEND_PORT: ${BACKEND_PORT}
       POSTGRES_URL: ${POSTGRES_URL}
+      MAIL_SERVER: ${MAIL_SERVER}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USE_TLS: ${MAIL_USE_TLS}
+      MAIL_USE_SSL: ${MAIL_USE_SSL}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_DEFAULT_SENDER: ${MAIL_DEFAULT_SENDER}
     networks:
       - mydaily
       - database
@@ -19,6 +26,7 @@ services:
     restart: always
     volumes:
       - postgres:/var/lib/postgresql/data
+    command: postgres -c 'max_connections=100'
     healthcheck:
       test:
         [

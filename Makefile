@@ -23,6 +23,7 @@ urls: ## Show the urls to the running applications
 	@echo "* Backend: https://mydaily.com/api/"
 	@echo "*"
 	@echo "* Swagger: https://mydaily.com/api/swagger (local only)"
+	@echo "* Mailpit: http://localhost:8025 (local only)"
 	@echo "*------\n"
 .PHONY: urls
 
