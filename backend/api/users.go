@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	db "github.com/SantGT5/mydaily/db/sqlc"
+	"github.com/SantGT5/mydaily/mq"
 	"github.com/SantGT5/mydaily/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -43,6 +44,16 @@ func (server *Server) createUser(ctx *gin.Context) {
 	}
 
 	user, err := server.store.CreateUser(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	err = mq.PostMessage(mq.QueueNameWelcomeUserEmail, map[string]any{
+		"email":     user.Email,
+		"full_name": user.FullName,
+		"token":     uuid.New().String(),
+	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
 		return

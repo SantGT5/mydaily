@@ -11,9 +11,17 @@ mydaily.com {
 	redir /caddy-status /caddy-status/
 	respond /caddy-status/ "OK" 200
 
+	# Swagger
 	redir /api/swagger /api/swagger/index.html 308
 	redir /api/swagger/ /api/swagger/index.html 308
 
+	# RabbitMQ
+	redir /rabbitmq /rabbitmq/ permanent
+	handle_path /rabbitmq* {
+		reverse_proxy rabbitmq:15672
+	}
+
+	# API
 	redir /api /api/ permanent
 	handle_path /api/* {
 		reverse_proxy backend:8080

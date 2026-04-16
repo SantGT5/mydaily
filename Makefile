@@ -21,9 +21,9 @@ urls: ## Show the urls to the running applications
 	@echo "* My Daily"
 	@echo "*"
 	@echo "* Backend: https://mydaily.com/api/"
+	@echo "* RabbitMQ: https://mydaily.com/rabbitmq/"
 	@echo "*"
 	@echo "* Swagger: https://mydaily.com/api/swagger (local only)"
-	@echo "* Mailpit: http://localhost:8025 (local only)"
 	@echo "*------\n"
 .PHONY: urls
 

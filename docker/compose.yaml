@@ -5,20 +5,25 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       ENV: ${ENV}
       BACKEND_PORT: ${BACKEND_PORT}
       POSTGRES_URL: ${POSTGRES_URL}
-      MAIL_SERVER: ${MAIL_SERVER}
-      MAIL_PORT: ${MAIL_PORT}
-      MAIL_USE_TLS: ${MAIL_USE_TLS}
-      MAIL_USE_SSL: ${MAIL_USE_SSL}
-      MAIL_USERNAME: ${MAIL_USERNAME}
-      MAIL_PASSWORD: ${MAIL_PASSWORD}
+
+      # Mail
+      RESEND_API_KEY: ${RESEND_API_KEY}
       MAIL_DEFAULT_SENDER: ${MAIL_DEFAULT_SENDER}
+
+      # RabbitMQ
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     networks:
-      - mydaily
+      - caddy
       - database
+      - rabbitmq
 
   postgres:
     image: postgres:18.3-alpine
@@ -50,6 +55,50 @@ services:
     networks:
       - database
 
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    image: rabbitmq:4.2.5-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./mq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - caddy
+      - rabbitmq
+
+  mq-worker:
+    container_name: mq-worker
+    restart: always
+    volumes:
+      - ../mq-worker:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      ENV: ${ENV}
+      BASE_URL: ${BASE_URL}
+      POSTGRES_URL: ${POSTGRES_URL}
+
+      # Mail
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      MAIL_DEFAULT_SENDER: ${MAIL_DEFAULT_SENDER}
+
+      # RabbitMQ
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    networks:
+      - database
+      - rabbitmq
+
   caddy:
     image: caddy:2.11.2-alpine
     container_name: caddy
@@ -61,13 +110,15 @@ services:
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
     networks:
-      - mydaily
+      - caddy
 
 volumes:
   postgres:
   caddy_data:
   caddy_config:
+  rabbitmq_data:
 
 networks:
-  mydaily:
+  caddy:
   database:
+  rabbitmq:
