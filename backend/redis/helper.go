@@ -61,3 +61,40 @@ func Store(
 
 	return key, nil
 }
+
+func GetByToken(
+	ctx context.Context,
+	db string,
+	token string,
+	tokenType string,
+	returnValue bool,
+	client *redis.Client,
+) ([]string, error) {
+	keyPattern := fmt.Sprintf("%s:%s/*", db, token)
+
+	if tokenType != "" {
+		keyPattern = fmt.Sprintf("%s:%s/*/%s", db, token, tokenType)
+	}
+
+	keys, err := client.Keys(ctx, keyPattern).Result()
+	if err != nil {
+		return nil, fmt.Errorf("failed while getting keys from Redis: %v", err)
+	}
+
+	if !returnValue {
+		return keys, nil
+	}
+
+	values := make([]string, 0, len(keys))
+
+	for _, key := range keys {
+		value, getErr := client.Get(ctx, key).Result()
+		if getErr != nil {
+			return nil, fmt.Errorf("failed while getting value from Redis: %v", getErr)
+		}
+
+		values = append(values, value)
+	}
+
+	return values, nil
+}

@@ -30,7 +30,16 @@ func StoreMailToken(
 
 	customKey := fmt.Sprintf("%s/%s", userID, tokenType)
 
-	// Example Key: mail:1234567890:confirm_email
-	// Example Value: 1234567890
+	// Example Key: mail:<token>/<userID>/<tokenType>
+	// Example Value: <userID>
 	return Store(ctx, "mail", expire, userID, ttlSeconds, customKey, RedisClient)
+}
+
+func GetMailToken(
+	ctx context.Context,
+	token string,
+	returnValue bool,
+	tokenType MailTokenType,
+) ([]string, error) {
+	return GetByToken(ctx, "mail", token, string(tokenType), returnValue, RedisClient)
 }

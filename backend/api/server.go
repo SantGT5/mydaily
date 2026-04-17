@@ -22,6 +22,7 @@ func NewServer(store db.Store) *Server {
 	{
 		users.POST("/", server.createUser)
 		users.GET("/:id/", server.getUserById)
+		users.GET("/validate-email-token/:token/", server.ValidateUserEmailToken)
 	}
 
 	if config.IsDebug {

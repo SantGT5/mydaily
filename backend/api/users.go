@@ -70,6 +70,50 @@ func (server *Server) createUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, UserToResponse(user))
 }
 
+// @Summary Validate a user email token
+// @Description Validate a user email token
+// @Accept json
+// @Produce json
+// @Param token path string true "Token"
+// @Success 200 {object} UserResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /users/validate-email-token/{token}/ [get]
+// @Tags users
+func (server *Server) ValidateUserEmailToken(ctx *gin.Context) {
+	token := ctx.Param("token")
+
+	mailTokens, err := redis.GetMailToken(ctx, token, true, redis.MailTokenConfirmEmail)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, false)
+		return
+	}
+
+	if len(mailTokens) == 0 {
+		ctx.JSON(http.StatusBadRequest, false)
+		return
+	}
+
+	userID, err := uuid.Parse(mailTokens[0])
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, false)
+		return
+	}
+
+	user, err := server.store.GetUserById(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, false)
+		return
+	}
+
+	if user.ID == uuid.Nil {
+		ctx.JSON(http.StatusBadRequest, false)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, true)
+}
+
 // @Summary Get a user by ID
 // @Description Get a user by ID
 // @Accept json
