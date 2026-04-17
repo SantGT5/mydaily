@@ -1,6 +1,18 @@
 package config
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
+
+var REDIS_DB = map[string]int{
+	"mail":    1,
+	"session": 0,
+}
+
+func GetRedisURL(redisURL string, db int) string {
+	return fmt.Sprintf("%s/%d", redisURL, db)
+}
 
 var (
 	// General
@@ -15,9 +27,9 @@ var (
 	// Mail
 	ResendAPIKey      = os.Getenv("RESEND_API_KEY")
 	MailDefaultSender = os.Getenv("MAIL_DEFAULT_SENDER")
+	MailExpiresTime   = 86400 // 24 hours
+	MailRedisURL      = GetRedisURL(os.Getenv("REDIS_URL"), REDIS_DB["mail"])
 
 	// RabbitMQ
-	RabbitMQURL         = os.Getenv("RABBITMQ_URL")
-	RabbitMQDefaultUser = os.Getenv("RABBITMQ_DEFAULT_USER")
-	RabbitMQDefaultPass = os.Getenv("RABBITMQ_DEFAULT_PASS")
+	RabbitMQURL = os.Getenv("RABBITMQ_URL")
 )
