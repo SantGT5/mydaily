@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"strings"
 
 	"github.com/SantGT5/mydaily-worker/config"
 )
@@ -129,6 +130,129 @@ func SendUserWelcomeEmail(message any) {
 
 	if !success {
 		log.Printf("Error sending welcome email")
+		return
+	}
+}
+
+var SuccessfulActivateUserAccountEmailTemplate = template.Must(template.New("successfulActivateUserAccountEmailTemplate").Parse(`
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+	<tr>
+		<td style="padding:0 0 24px;">
+			<div style="display:inline-block;padding:6px 12px;border-radius:999px;background-color:#ecfdf5;color:#047857;font-size:12px;font-weight:700;letter-spacing:0.02em;">
+				Account activated
+			</div>
+		</td>
+	</tr>
+
+	<tr>
+		<td style="padding:0 0 12px;">
+			<h1 style="margin:0;font-size:30px;line-height:1.25;font-weight:700;color:#111827;">
+				You're all set{{if .Name}}, {{.Name}}{{end}}!
+			</h1>
+		</td>
+	</tr>
+
+	<tr>
+		<td style="padding:0 0 16px;">
+			<p style="margin:0;font-size:16px;line-height:1.75;color:#4b5563;">
+				Your email address <strong style="color:#111827;">{{.Email}}</strong> has been confirmed and your MyDaily account is now active.
+			</p>
+		</td>
+	</tr>
+
+	<tr>
+		<td style="padding:0 0 24px;">
+			<table role="presentation" cellspacing="0" cellpadding="0" border="0">
+				<tr>
+					<td align="center" style="border-radius:10px;background:linear-gradient(135deg,#4f46e5,#2563eb);">
+						<a href="{{.AppURL}}" style="display:inline-block;padding:14px 24px;font-size:14px;line-height:1.2;font-weight:700;color:#ffffff;text-decoration:none;border-radius:10px;">
+							Open MyDaily
+						</a>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+
+	<tr>
+		<td style="padding:0 0 20px;">
+			<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;">
+				<tr>
+					<td style="padding:16px 18px;">
+						<p style="margin:0 0 8px;font-size:13px;line-height:1.6;font-weight:600;color:#111827;">
+							Didn't activate this account?
+						</p>
+						<p style="margin:0;font-size:13px;line-height:1.7;color:#6b7280;">
+							If you did not confirm this email, you can ignore this message or contact support through the app.
+						</p>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+
+	<tr>
+		<td>
+			<p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#6b7280;">
+				If the button does not work, copy and paste this link into your browser:
+			</p>
+			<p style="margin:0;font-size:13px;line-height:1.7;word-break:break-all;">
+				<a href="{{.AppURL}}" style="color:#2563eb;text-decoration:underline;">{{.AppURL}}</a>
+			</p>
+		</td>
+	</tr>
+</table>
+`))
+
+func SendSuccessfulActivateUserAccountEmail(message any) {
+	b, err := json.Marshal(message)
+	if err != nil {
+		log.Printf("successful activate user account email: marshal payload: %v", err)
+		return
+	}
+
+	var payload struct {
+		Email    string `json:"email"`
+		FullName string `json:"full_name"`
+	}
+
+	if err := json.Unmarshal(b, &payload); err != nil {
+		log.Printf("successful activate user account email: invalid JSON payload: %v", err)
+		return
+	}
+	if payload.Email == "" {
+		log.Printf("successful activate user account email: missing email (empty or absent in message)")
+		return
+	}
+
+	email := payload.Email
+	name := payload.FullName
+	appURL := strings.TrimRight(config.BaseURL, "/")
+
+	var successfulActivateUserAccountContent bytes.Buffer
+
+	err = SuccessfulActivateUserAccountEmailTemplate.Execute(&successfulActivateUserAccountContent, successfulActivateUserAccountEmailTemplateData{
+		Name:   name,
+		Email:  email,
+		AppURL: appURL,
+	})
+
+	if err != nil {
+		log.Printf("Error executing successful activate user account email template: %v", err)
+		return
+	}
+
+	html, err := RenderEmailTemplate(successfulActivateUserAccountContent.String())
+
+	if err != nil {
+		log.Printf("Error rendering successful activate user account email template: %v", err)
+		return
+	}
+
+	success := SendEmail(html, "Your account has been activated", []string{email})
+
+	if !success {
+		log.Printf("Error sending successful activate user account email")
 		return
 	}
 }

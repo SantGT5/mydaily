@@ -8,13 +8,14 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type QueueName string
+type Queue string
 
 const (
-	QueueNameWelcomeUserEmail QueueName = "welcome-user-email"
+	QueueActivateUserAccountEmail        Queue = "activate-user-account-email"
+	QueueSuccessActivateUserAccountEmail Queue = "successful-activate-user-account-email"
 )
 
-func PostMessage(queueName QueueName, messageBody any) error {
+func PostMessage(queueName Queue, messageBody any) error {
 	if messageBody == nil {
 		return fmt.Errorf("message body is required")
 	}

@@ -12,7 +12,8 @@ type QueueHandler func(message any)
 
 // QueueHandlers maps queue names to worker handlers.
 var QueueHandlers = map[string]QueueHandler{
-	"welcome-user-email": mail.SendUserWelcomeEmail,
+	"activate-user-account-email":            mail.SendUserWelcomeEmail,
+	"successful-activate-user-account-email": mail.SendSuccessfulActivateUserAccountEmail,
 }
 
 // callbackFactory creates a RabbitMQ callback for a specific queue.

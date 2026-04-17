@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/SantGT5/mydaily/config"
@@ -58,7 +59,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	err = mq.PostMessage(mq.QueueNameWelcomeUserEmail, map[string]any{
+	err = mq.PostMessage(mq.QueueActivateUserAccountEmail, map[string]any{
 		"email":     user.Email,
 		"full_name": user.FullName,
 		"token":     token,
@@ -190,6 +191,14 @@ func (server *Server) ActivateUser(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Something went wrong while deleting the token."})
 		return
+	}
+
+	err = mq.PostMessage(mq.QueueSuccessActivateUserAccountEmail, map[string]any{
+		"email":     user.Email,
+		"full_name": user.FullName,
+	})
+	if err != nil {
+		fmt.Println("Something went wrong while sending the successful activation email.")
 	}
 
 	ctx.JSON(http.StatusOK, UserToResponse(activatedUser))

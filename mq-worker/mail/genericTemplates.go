@@ -15,6 +15,12 @@ type welcomeEmailTemplateData struct {
 	ActivationLink string
 }
 
+type successfulActivateUserAccountEmailTemplateData struct {
+	Email  string
+	Name   string
+	AppURL string
+}
+
 var genericEmailTemplate = template.Must(template.New("genericEmailTemplate").Parse(`
 <!DOCTYPE html>
 <html lang="en">
