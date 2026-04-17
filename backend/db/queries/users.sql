@@ -135,13 +135,12 @@ OFFSET
         ELSE p.offset_rows
     END;
 
--- name: UpdateUser :one
+-- name: ActivateUser :one
 UPDATE users
 SET
-    full_name = $2,
-    is_active = $3,
-    hashed_password = $4,
-    is_email_verified = $5
+    is_active = TRUE,
+    hashed_password = $2,
+    is_email_verified = TRUE
 WHERE
     id = $1
 RETURNING

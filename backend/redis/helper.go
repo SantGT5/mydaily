@@ -11,6 +11,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// NewRedisClient creates a new Redis client.
+// It returns the Redis client on success, or nil on failure.
 func NewRedisClient(url string) *redis.Client {
 	opts, err := redis.ParseURL(url)
 
@@ -62,6 +64,8 @@ func Store(
 	return key, nil
 }
 
+// GetByToken gets a value from Redis by token.
+// It returns the value on success, or an error on failure.
 func GetByToken(
 	ctx context.Context,
 	db string,
@@ -97,4 +101,29 @@ func GetByToken(
 	}
 
 	return values, nil
+}
+
+// CleanUserMailKeys deletes all Redis mail keys scoped to the given user ID.
+// Empty userID is a no-op (nil error).
+func CleanUserMailKeys(ctx context.Context, userID string, client *redis.Client) error {
+	if userID == "" {
+		return nil
+	}
+
+	pattern := fmt.Sprintf("mail:*/%s/*", userID)
+
+	keys, err := client.Keys(ctx, pattern).Result()
+	if err != nil {
+		return fmt.Errorf("failed while listing mail keys from Redis: %w", err)
+	}
+
+	if len(keys) == 0 {
+		return nil
+	}
+
+	if err := client.Del(ctx, keys...).Err(); err != nil {
+		return fmt.Errorf("failed while deleting mail keys from Redis: %w", err)
+	}
+
+	return nil
 }

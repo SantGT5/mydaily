@@ -13,6 +13,39 @@ import (
 	"github.com/google/uuid"
 )
 
+const activateUser = `-- name: ActivateUser :one
+UPDATE users
+SET
+    is_active = TRUE,
+    hashed_password = $2,
+    is_email_verified = TRUE
+WHERE
+    id = $1
+RETURNING
+    id, hashed_password, full_name, email, is_active, is_email_verified, created_at, updated_at
+`
+
+type ActivateUserParams struct {
+	ID             uuid.UUID      `json:"id"`
+	HashedPassword sql.NullString `json:"hashed_password"`
+}
+
+func (q *Queries) ActivateUser(ctx context.Context, arg ActivateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, activateUser, arg.ID, arg.HashedPassword)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.IsActive,
+		&i.IsEmailVerified,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO
     users (full_name, email)
@@ -300,47 +333,4 @@ UPDATE users SET is_active = FALSE WHERE id = ANY ($1)
 func (q *Queries) SoftDeleteUserByIdMany(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, softDeleteUserByIdMany, id)
 	return err
-}
-
-const updateUser = `-- name: UpdateUser :one
-UPDATE users
-SET
-    full_name = $2,
-    is_active = $3,
-    hashed_password = $4,
-    is_email_verified = $5
-WHERE
-    id = $1
-RETURNING
-    id, hashed_password, full_name, email, is_active, is_email_verified, created_at, updated_at
-`
-
-type UpdateUserParams struct {
-	ID              uuid.UUID      `json:"id"`
-	FullName        string         `json:"full_name"`
-	IsActive        bool           `json:"is_active"`
-	HashedPassword  sql.NullString `json:"hashed_password"`
-	IsEmailVerified bool           `json:"is_email_verified"`
-}
-
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUser,
-		arg.ID,
-		arg.FullName,
-		arg.IsActive,
-		arg.HashedPassword,
-		arg.IsEmailVerified,
-	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.HashedPassword,
-		&i.FullName,
-		&i.Email,
-		&i.IsActive,
-		&i.IsEmailVerified,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
 }

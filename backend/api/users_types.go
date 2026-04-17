@@ -21,6 +21,11 @@ type UserResponse struct {
 	UpdatedAt       string `json:"updated_at"`
 }
 
+type ActivateUserRequest struct {
+	Token    string `json:"token" binding:"required"`
+	Password string `json:"password" binding:"required,min=8,max=64"`
+}
+
 func UserToResponse(user db.User) UserResponse {
 	return UserResponse{
 		ID:              user.ID.String(),

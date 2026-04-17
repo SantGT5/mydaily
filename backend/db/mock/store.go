@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	sqlc "github.com/SantGT5/mydaily/db/sqlc"
+	db "github.com/SantGT5/mydaily/db/sqlc"
 	uuid "github.com/google/uuid"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -42,11 +42,26 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// ActivateUser mocks base method.
+func (m *MockStore) ActivateUser(ctx context.Context, arg db.ActivateUserParams) (db.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ActivateUser", ctx, arg)
+	ret0, _ := ret[0].(db.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ActivateUser indicates an expected call of ActivateUser.
+func (mr *MockStoreMockRecorder) ActivateUser(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActivateUser", reflect.TypeOf((*MockStore)(nil).ActivateUser), ctx, arg)
+}
+
 // CreateUser mocks base method.
-func (m *MockStore) CreateUser(ctx context.Context, arg sqlc.CreateUserParams) (sqlc.User, error) {
+func (m *MockStore) CreateUser(ctx context.Context, arg db.CreateUserParams) (db.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, arg)
-	ret0, _ := ret[0].(sqlc.User)
+	ret0, _ := ret[0].(db.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -58,10 +73,10 @@ func (mr *MockStoreMockRecorder) CreateUser(ctx, arg any) *gomock.Call {
 }
 
 // GetUserByEmail mocks base method.
-func (m *MockStore) GetUserByEmail(ctx context.Context, email string) (sqlc.User, error) {
+func (m *MockStore) GetUserByEmail(ctx context.Context, email string) (db.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserByEmail", ctx, email)
-	ret0, _ := ret[0].(sqlc.User)
+	ret0, _ := ret[0].(db.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -73,10 +88,10 @@ func (mr *MockStoreMockRecorder) GetUserByEmail(ctx, email any) *gomock.Call {
 }
 
 // GetUserById mocks base method.
-func (m *MockStore) GetUserById(ctx context.Context, id uuid.UUID) (sqlc.User, error) {
+func (m *MockStore) GetUserById(ctx context.Context, id uuid.UUID) (db.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserById", ctx, id)
-	ret0, _ := ret[0].(sqlc.User)
+	ret0, _ := ret[0].(db.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -88,10 +103,10 @@ func (mr *MockStoreMockRecorder) GetUserById(ctx, id any) *gomock.Call {
 }
 
 // GetUsers mocks base method.
-func (m *MockStore) GetUsers(ctx context.Context, arg sqlc.GetUsersParams) ([]sqlc.GetUsersRow, error) {
+func (m *MockStore) GetUsers(ctx context.Context, arg db.GetUsersParams) ([]db.GetUsersRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUsers", ctx, arg)
-	ret0, _ := ret[0].([]sqlc.GetUsersRow)
+	ret0, _ := ret[0].([]db.GetUsersRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -156,19 +171,4 @@ func (m *MockStore) SoftDeleteUserByIdMany(ctx context.Context, id uuid.UUID) er
 func (mr *MockStoreMockRecorder) SoftDeleteUserByIdMany(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SoftDeleteUserByIdMany", reflect.TypeOf((*MockStore)(nil).SoftDeleteUserByIdMany), ctx, id)
-}
-
-// UpdateUser mocks base method.
-func (m *MockStore) UpdateUser(ctx context.Context, arg sqlc.UpdateUserParams) (sqlc.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateUser", ctx, arg)
-	ret0, _ := ret[0].(sqlc.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateUser indicates an expected call of UpdateUser.
-func (mr *MockStoreMockRecorder) UpdateUser(ctx, arg any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockStore)(nil).UpdateUser), ctx, arg)
 }

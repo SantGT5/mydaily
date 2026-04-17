@@ -111,48 +111,6 @@ func TestUserStore_GetUsers(t *testing.T) {
 	}
 }
 
-func TestUserStore_UpdateAndSoftDelete(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	store := mockdb.NewMockStore(ctrl)
-	ctx := context.Background()
-	now := time.Date(2026, time.April, 14, 9, 0, 0, 0, time.UTC)
-	user := mockUserFixture(now)
-
-	updateArg := db.UpdateUserParams{
-		ID:              user.ID,
-		FullName:        "Updated User",
-		IsActive:        true,
-		HashedPassword:  sql.NullString{String: "new-hash", Valid: true},
-		IsEmailVerified: true,
-	}
-	updated := user
-	updated.FullName = updateArg.FullName
-	updated.HashedPassword = updateArg.HashedPassword
-	updated.IsEmailVerified = updateArg.IsEmailVerified
-	updated.UpdatedAt = now.Add(time.Hour)
-
-	store.EXPECT().UpdateUser(ctx, updateArg).Times(1).Return(updated, nil)
-	store.EXPECT().SoftDeleteUserByEmail(ctx, updated.Email).Times(1).Return(nil)
-	store.EXPECT().SoftDeleteUserById(ctx, updated.ID).Times(1).Return(nil)
-
-	got, err := store.UpdateUser(ctx, updateArg)
-	if err != nil {
-		t.Fatalf("UpdateUser() error = %v", err)
-	}
-	if got != updated {
-		t.Fatalf("UpdateUser() got %+v, want %+v", got, updated)
-	}
-
-	if err := store.SoftDeleteUserByEmail(ctx, updated.Email); err != nil {
-		t.Fatalf("SoftDeleteUserByEmail() error = %v", err)
-	}
-	if err := store.SoftDeleteUserById(ctx, updated.ID); err != nil {
-		t.Fatalf("SoftDeleteUserById() error = %v", err)
-	}
-}
-
 func TestUserStore_ErrorPropagation(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	ActivateUser(ctx context.Context, arg ActivateUserParams) (User, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
@@ -19,7 +20,6 @@ type Querier interface {
 	SoftDeleteUserByEmailMany(ctx context.Context, email string) error
 	SoftDeleteUserById(ctx context.Context, id uuid.UUID) error
 	SoftDeleteUserByIdMany(ctx context.Context, id uuid.UUID) error
-	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

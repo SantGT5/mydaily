@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/SantGT5/mydaily/config"
@@ -112,6 +113,86 @@ func (server *Server) ValidateUserEmailToken(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, true)
+}
+
+// @Summary Activate a user
+// @Description Activate a user
+// @Accept json
+// @Produce json
+// @Param user body ActivateUserRequest true "User to activate"
+// @Success 200 {object} bool
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /users/activate/ [post]
+// @Tags users
+func (server *Server) ActivateUser(ctx *gin.Context) {
+	var req ActivateUserRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		if fields, ok := utils.ValidationErrors(err); ok {
+			ctx.JSON(http.StatusBadRequest, ValidationErrorResponse{ValidationError: fields})
+			return
+		}
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	if !utils.IsValidPassword(req.Password) {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Password pattern is not valid."})
+		return
+	}
+
+	mailTokens, err := redis.GetMailToken(ctx, req.Token, true, redis.MailTokenConfirmEmail)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Something went wrong while validation."})
+		return
+	}
+
+	if len(mailTokens) == 0 {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Something went wrong while validation."})
+		return
+	}
+
+	userID, err := uuid.Parse(mailTokens[0])
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Something went wrong while validation."})
+		return
+	}
+
+	user, err := server.store.GetUserById(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Something went wrong while validation."})
+		return
+	}
+
+	if user.ID == uuid.Nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Something went wrong while validation."})
+		return
+	}
+
+	hashedPassword, err := utils.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Something went wrong while validation."})
+		return
+	}
+
+	arg := db.ActivateUserParams{
+		ID:             user.ID,
+		HashedPassword: sql.NullString{String: hashedPassword, Valid: true},
+	}
+
+	activatedUser, err := server.store.ActivateUser(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Something went wrong while activating the user."})
+		return
+	}
+
+	err = redis.CleanUserMailKeys(ctx, user.ID.String(), redis.RedisClient)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Something went wrong while deleting the token."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, UserToResponse(activatedUser))
 }
 
 // @Summary Get a user by ID

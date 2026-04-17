@@ -9,6 +9,36 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// IsValidPassword checks if the password is valid.
+// It returns true if the password is valid, false otherwise.
+func IsValidPassword(p string) bool {
+	var (
+		hasUpper   = false
+		hasLower   = false
+		hasNumber  = false
+		hasSpecial = false
+	)
+
+	if len(p) < 8 || len(p) > 64 {
+		return false
+	}
+
+	for _, char := range p {
+		switch {
+		case unicode.IsUpper(char):
+			hasUpper = true
+		case unicode.IsLower(char):
+			hasLower = true
+		case unicode.IsDigit(char):
+			hasNumber = true
+		case unicode.IsPunct(char) || unicode.IsSymbol(char):
+			hasSpecial = true
+		}
+	}
+
+	return hasUpper && hasLower && hasNumber && hasSpecial
+}
+
 // ValidationErrors maps JSON-style field keys (e.g. fullName, email) to human-readable messages.
 // It returns false if err does not contain validator.ValidationErrors (e.g. malformed JSON body).
 func ValidationErrors(err error) (map[string]string, bool) {
