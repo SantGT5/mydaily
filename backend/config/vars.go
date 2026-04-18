@@ -30,6 +30,10 @@ var (
 	MailExpiresTime   = 86400 // 24 hours
 	MailRedisURL      = GetRedisURL(os.Getenv("REDIS_URL"), REDIS_DB["mail"])
 
+	// Session
+	SessionExpiresTime = 86400 // 24 hours
+	SessionRedisURL    = GetRedisURL(os.Getenv("REDIS_URL"), REDIS_DB["session"])
+
 	// RabbitMQ
 	RabbitMQURL = os.Getenv("RABBITMQ_URL")
 )

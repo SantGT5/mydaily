@@ -26,6 +26,11 @@ func NewServer(store db.Store) *Server {
 		users.GET("/validate-email-token/:token/", server.ValidateUserEmailToken)
 	}
 
+	auth := router.Group("/auth")
+	{
+		auth.POST("/login/", server.Login)
+	}
+
 	if config.IsDebug {
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
