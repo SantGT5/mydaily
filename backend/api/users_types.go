@@ -8,7 +8,7 @@ import (
 
 type CreateUserRequest struct {
 	FullName string `json:"full_name" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
+	Email    string `json:"email" binding:"required,email,lowercase"`
 	Role     string `json:"role" binding:"required,oneof=user admin"`
 }
 
