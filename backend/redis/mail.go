@@ -8,7 +8,7 @@ import (
 	"github.com/SantGT5/mydaily/config"
 )
 
-var RedisClient = NewRedisClient(config.MailRedisURL)
+var MailRedisClient = NewRedisClient(config.MailRedisURL)
 
 type MailTokenType string
 
@@ -32,7 +32,7 @@ func StoreMailToken(
 
 	// Example Key: mail:<token>/<userID>/<tokenType>
 	// Example Value: <userID>
-	return Store(ctx, "mail", expire, userID, ttlSeconds, customKey, RedisClient)
+	return Store(ctx, "mail", expire, userID, ttlSeconds, customKey, MailRedisClient)
 }
 
 func GetMailToken(
@@ -41,5 +41,30 @@ func GetMailToken(
 	returnValue bool,
 	tokenType MailTokenType,
 ) ([]string, error) {
-	return GetByToken(ctx, "mail", token, string(tokenType), returnValue, RedisClient)
+	return GetByToken(ctx, "mail", token, string(tokenType), returnValue, MailRedisClient)
+}
+
+// CleanUserMailKeys deletes all Redis mail keys scoped to the given user ID.
+// Empty userID is a no-op (nil error).
+func CleanUserMailKeys(ctx context.Context, userID string) error {
+	if userID == "" {
+		return nil
+	}
+
+	pattern := fmt.Sprintf("mail:*/%s/*", userID)
+
+	keys, err := MailRedisClient.Keys(ctx, pattern).Result()
+	if err != nil {
+		return fmt.Errorf("failed while listing mail keys from Redis: %w", err)
+	}
+
+	if len(keys) == 0 {
+		return nil
+	}
+
+	if err := MailRedisClient.Del(ctx, keys...).Err(); err != nil {
+		return fmt.Errorf("failed while deleting mail keys from Redis: %w", err)
+	}
+
+	return nil
 }

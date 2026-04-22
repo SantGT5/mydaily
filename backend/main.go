@@ -1,7 +1,12 @@
 // @title MyDaily API
-// @version 1.0
-// @description HTTP API for MyDaily
-// @BasePath /api
+// @version 2.0.0
+// @description HTTP API for MyDaily with custom X-Session header auth
+// @BasePath /api/
+// @securityDefinitions.apikey X-Session
+// @in header
+// @name X-Session
+// @description User session token
+// @security X-Session
 package main
 
 import (

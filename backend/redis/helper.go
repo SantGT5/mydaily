@@ -102,28 +102,3 @@ func GetByToken(
 
 	return values, nil
 }
-
-// CleanUserMailKeys deletes all Redis mail keys scoped to the given user ID.
-// Empty userID is a no-op (nil error).
-func CleanUserMailKeys(ctx context.Context, userID string, client *redis.Client) error {
-	if userID == "" {
-		return nil
-	}
-
-	pattern := fmt.Sprintf("mail:*/%s/*", userID)
-
-	keys, err := client.Keys(ctx, pattern).Result()
-	if err != nil {
-		return fmt.Errorf("failed while listing mail keys from Redis: %w", err)
-	}
-
-	if len(keys) == 0 {
-		return nil
-	}
-
-	if err := client.Del(ctx, keys...).Err(); err != nil {
-		return fmt.Errorf("failed while deleting mail keys from Redis: %w", err)
-	}
-
-	return nil
-}

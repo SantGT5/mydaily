@@ -187,7 +187,7 @@ func (server *Server) ActivateUser(ctx *gin.Context) {
 		return
 	}
 
-	err = redis.CleanUserMailKeys(ctx, user.ID.String(), redis.RedisClient)
+	err = redis.CleanUserMailKeys(ctx, user.ID.String())
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Something went wrong while deleting the token."})
 		return

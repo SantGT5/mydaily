@@ -14,10 +14,10 @@ services:
     ports:
       - 6379:6379
 
-  mq-worker:
+  worker:
     build:
       context: ../
-      dockerfile: docker/stack/mq-worker/Dockerfile.local
+      dockerfile: docker/stack/worker/Dockerfile.local
 
   caddy:
     volumes:

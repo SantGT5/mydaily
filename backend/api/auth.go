@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/SantGT5/mydaily/config"
+	db "github.com/SantGT5/mydaily/db/sqlc"
 	"github.com/SantGT5/mydaily/redis"
 	"github.com/SantGT5/mydaily/utils"
 	"github.com/gin-gonic/gin"
@@ -49,7 +51,11 @@ func (server *Server) Login(ctx *gin.Context) {
 		return
 	}
 
-	// TODO: delete previous session token
+	err = redis.CleanUserSessionKeys(ctx, user.ID.String())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Something went wrong while creating the session token."})
+		return
+	}
 
 	sessionToken, err := redis.StoreSessionToken(ctx, true, user.ID.String(), config.SessionExpiresTime, "")
 	if err != nil {
@@ -58,4 +64,32 @@ func (server *Server) Login(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, LoginToResponse(sessionToken))
+}
+
+// @Summary Get the current user
+// @Description Get the current user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} UserResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /auth/me/ [get]
+// @Security X-Session
+func (server *Server) Me(ctx *gin.Context) {
+	user, ok := ctx.Get("loggedInUser")
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Unauthorized"})
+		return
+	}
+
+	userData, ok := user.(db.User)
+
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Unauthorized"})
+		return
+	}
+	fmt.Println(userData)
+
+	ctx.JSON(http.StatusOK, UserToResponse(userData))
 }

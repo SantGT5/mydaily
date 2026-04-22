@@ -4,6 +4,7 @@ import (
 	"github.com/SantGT5/mydaily/config"
 	db "github.com/SantGT5/mydaily/db/sqlc"
 	_ "github.com/SantGT5/mydaily/docs"
+	"github.com/SantGT5/mydaily/middleware"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -29,6 +30,7 @@ func NewServer(store db.Store) *Server {
 	auth := router.Group("/auth")
 	{
 		auth.POST("/login/", server.Login)
+		auth.GET("/me/", middleware.IsLoggedIn(server.store), server.Me)
 	}
 
 	if config.IsDebug {
