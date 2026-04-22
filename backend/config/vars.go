@@ -6,8 +6,9 @@ import (
 )
 
 var REDIS_DB = map[string]int{
-	"mail":    1,
 	"session": 0,
+	"mail":    1,
+	"limiter": 2,
 }
 
 func GetRedisURL(redisURL string, db int) string {
@@ -33,6 +34,9 @@ var (
 	// Session
 	SessionExpiresTime = 86400 // 24 hours
 	SessionRedisURL    = GetRedisURL(os.Getenv("REDIS_URL"), REDIS_DB["session"])
+
+	// Rate limiter
+	LimiterRedisURL = GetRedisURL(os.Getenv("REDIS_URL"), REDIS_DB["limiter"])
 
 	// RabbitMQ
 	RabbitMQURL = os.Getenv("RABBITMQ_URL")

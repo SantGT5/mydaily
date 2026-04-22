@@ -5,6 +5,7 @@ import (
 	db "github.com/SantGT5/mydaily/db/sqlc"
 	_ "github.com/SantGT5/mydaily/docs"
 	"github.com/SantGT5/mydaily/middleware"
+	"github.com/SantGT5/mydaily/redis"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -21,8 +22,8 @@ func NewServer(store db.Store) *Server {
 
 	users := router.Group("/users")
 	{
-		users.POST("/", server.createUser)
-		users.GET("/:id/", server.getUserById)
+		users.POST("/", middleware.RateLimitByIP(10, redis.RateLimitPerMinute), server.createUser)
+		users.GET("/:id/", middleware.RateLimitByIP(20, redis.RateLimitPerMinute), server.getUserById)
 		users.POST("/activate/", server.ActivateUser)
 		users.GET("/validate-email-token/:token/", server.ValidateUserEmailToken)
 	}
