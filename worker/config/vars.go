@@ -14,7 +14,7 @@ var (
 
 	// Mail
 	ResendAPIKey      = os.Getenv("RESEND_API_KEY")
-	MailDefaultSender = os.Getenv("MAIL_DEFAULT_SENDER")
+	MailDefaultSender = "MyDaily <onboarding@resend.dev>"
 
 	// RabbitMQ
 	RabbitMQURL = os.Getenv("RABBITMQ_URL")

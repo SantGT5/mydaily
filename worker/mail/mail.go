@@ -18,7 +18,7 @@ func SendEmail(html string, subject string, recipients []string) bool {
 		Html:    html,
 		Subject: subject,
 		To:      recipients,
-		From:    "Acme <onboarding@resend.dev>",
+		From:    config.MailDefaultSender,
 	}
 
 	_, err := client.Emails.Send(params)

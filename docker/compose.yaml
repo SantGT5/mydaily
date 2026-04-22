@@ -12,14 +12,12 @@ services:
     environment:
       ENV: ${ENV}
       BACKEND_PORT: ${BACKEND_PORT}
+
+      # Postgres
       POSTGRES_URL: ${POSTGRES_URL}
 
       # Redis
       REDIS_URL: ${REDIS_URL}
-
-      # Mail
-      RESEND_API_KEY: ${RESEND_API_KEY}
-      MAIL_DEFAULT_SENDER: ${MAIL_DEFAULT_SENDER}
 
       # RabbitMQ
       RABBITMQ_URL: ${RABBITMQ_URL}
@@ -110,7 +108,6 @@ services:
 
       # Mail
       RESEND_API_KEY: ${RESEND_API_KEY}
-      MAIL_DEFAULT_SENDER: ${MAIL_DEFAULT_SENDER}
 
       # RabbitMQ
       RABBITMQ_URL: ${RABBITMQ_URL}
