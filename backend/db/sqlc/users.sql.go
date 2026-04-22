@@ -22,7 +22,7 @@ SET
 WHERE
     id = $1
 RETURNING
-    id, hashed_password, full_name, email, is_active, is_email_verified, created_at, updated_at
+    id, hashed_password, full_name, email, is_active, is_email_verified, role, created_at, updated_at
 `
 
 type ActivateUserParams struct {
@@ -40,6 +40,7 @@ func (q *Queries) ActivateUser(ctx context.Context, arg ActivateUserParams) (Use
 		&i.Email,
 		&i.IsActive,
 		&i.IsEmailVerified,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -48,19 +49,20 @@ func (q *Queries) ActivateUser(ctx context.Context, arg ActivateUserParams) (Use
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO
-    users (full_name, email)
-VALUES ($1, $2)
+    users (full_name, email, role)
+VALUES ($1, $2, $3)
 RETURNING
-    id, hashed_password, full_name, email, is_active, is_email_verified, created_at, updated_at
+    id, hashed_password, full_name, email, is_active, is_email_verified, role, created_at, updated_at
 `
 
 type CreateUserParams struct {
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
+	FullName string   `json:"full_name"`
+	Email    string   `json:"email"`
+	Role     UserRole `json:"role"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.FullName, arg.Email)
+	row := q.db.QueryRowContext(ctx, createUser, arg.FullName, arg.Email, arg.Role)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -69,6 +71,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Email,
 		&i.IsActive,
 		&i.IsEmailVerified,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -76,7 +79,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, hashed_password, full_name, email, is_active, is_email_verified, created_at, updated_at FROM users WHERE email = $1 LIMIT 1
+SELECT id, hashed_password, full_name, email, is_active, is_email_verified, role, created_at, updated_at FROM users WHERE email = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -89,6 +92,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Email,
 		&i.IsActive,
 		&i.IsEmailVerified,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -96,7 +100,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT id, hashed_password, full_name, email, is_active, is_email_verified, created_at, updated_at FROM users WHERE id = $1 LIMIT 1
+SELECT id, hashed_password, full_name, email, is_active, is_email_verified, role, created_at, updated_at FROM users WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
@@ -109,6 +113,7 @@ func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.Email,
 		&i.IsActive,
 		&i.IsEmailVerified,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

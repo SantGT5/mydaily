@@ -52,7 +52,7 @@ func ValidationErrors(err error) (map[string]string, bool) {
 		if _, exists := out[key]; exists {
 			continue
 		}
-		out[key] = messageForFieldTag(fe.Field(), fe.Tag())
+		out[key] = messageForFieldTag(fe.Field(), fe.Tag(), fe.Param())
 	}
 	return out, true
 }
@@ -77,8 +77,11 @@ func humanizeFieldName(field string) string {
 	return b.String()
 }
 
-func messageForFieldTag(structField, tag string) string {
+func messageForFieldTag(structField, tag, param string) string {
 	switch tag {
+	case "oneof":
+		allowed := strings.ReplaceAll(param, " ", ", ")
+		return fmt.Sprintf("%s must be one of the following: %s", humanizeFieldName(structField), allowed)
 	case "required":
 		return fmt.Sprintf("%s is required", humanizeFieldName(structField))
 	case "email":

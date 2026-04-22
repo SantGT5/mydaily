@@ -13,60 +13,46 @@ import (
 	"github.com/google/uuid"
 )
 
-type ModelProvider string
+type UserRole string
 
 const (
-	ModelProviderOpenai ModelProvider = "openai"
-	ModelProviderClaude ModelProvider = "claude"
-	ModelProviderGemini ModelProvider = "gemini"
-	ModelProviderGrok   ModelProvider = "grok"
+	UserRoleUser  UserRole = "user"
+	UserRoleAdmin UserRole = "admin"
 )
 
-func (e *ModelProvider) Scan(src interface{}) error {
+func (e *UserRole) Scan(src interface{}) error {
 	switch s := src.(type) {
 	case []byte:
-		*e = ModelProvider(s)
+		*e = UserRole(s)
 	case string:
-		*e = ModelProvider(s)
+		*e = UserRole(s)
 	default:
-		return fmt.Errorf("unsupported scan type for ModelProvider: %T", src)
+		return fmt.Errorf("unsupported scan type for UserRole: %T", src)
 	}
 	return nil
 }
 
-type NullModelProvider struct {
-	ModelProvider ModelProvider `json:"model_provider"`
-	Valid         bool          `json:"valid"` // Valid is true if ModelProvider is not NULL
+type NullUserRole struct {
+	UserRole UserRole `json:"user_role"`
+	Valid    bool     `json:"valid"` // Valid is true if UserRole is not NULL
 }
 
 // Scan implements the Scanner interface.
-func (ns *NullModelProvider) Scan(value interface{}) error {
+func (ns *NullUserRole) Scan(value interface{}) error {
 	if value == nil {
-		ns.ModelProvider, ns.Valid = "", false
+		ns.UserRole, ns.Valid = "", false
 		return nil
 	}
 	ns.Valid = true
-	return ns.ModelProvider.Scan(value)
+	return ns.UserRole.Scan(value)
 }
 
 // Value implements the driver Valuer interface.
-func (ns NullModelProvider) Value() (driver.Value, error) {
+func (ns NullUserRole) Value() (driver.Value, error) {
 	if !ns.Valid {
 		return nil, nil
 	}
-	return string(ns.ModelProvider), nil
-}
-
-type ModelKey struct {
-	ID              uuid.UUID      `json:"id"`
-	UserID          uuid.UUID      `json:"user_id"`
-	Provider        ModelProvider  `json:"provider"`
-	KeyName         string         `json:"key_name"`
-	EncryptedApiKey string         `json:"encrypted_api_key"`
-	KeyLast4        sql.NullString `json:"key_last4"`
-	IsActive        bool           `json:"is_active"`
-	CreatedAt       time.Time      `json:"created_at"`
-	UpdatedAt       time.Time      `json:"updated_at"`
+	return string(ns.UserRole), nil
 }
 
 type User struct {
@@ -76,6 +62,7 @@ type User struct {
 	Email           string         `json:"email"`
 	IsActive        bool           `json:"is_active"`
 	IsEmailVerified bool           `json:"is_email_verified"`
+	Role            UserRole       `json:"role"`
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
 }

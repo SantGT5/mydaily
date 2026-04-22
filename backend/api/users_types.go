@@ -9,12 +9,14 @@ import (
 type CreateUserRequest struct {
 	FullName string `json:"full_name" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
+	Role     string `json:"role" binding:"required,oneof=user admin"`
 }
 
 type UserResponse struct {
 	ID              string `json:"id"`
 	FullName        string `json:"full_name"`
 	Email           string `json:"email"`
+	Role            string `json:"role"`
 	IsActive        bool   `json:"is_active"`
 	IsEmailVerified bool   `json:"is_email_verified"`
 	CreatedAt       string `json:"created_at"`
@@ -31,6 +33,7 @@ func UserToResponse(user db.User) UserResponse {
 		ID:              user.ID.String(),
 		FullName:        user.FullName,
 		Email:           user.Email,
+		Role:            string(user.Role),
 		IsActive:        user.IsActive,
 		IsEmailVerified: user.IsEmailVerified,
 		CreatedAt:       user.CreatedAt.Format(time.RFC3339Nano),
