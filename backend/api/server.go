@@ -23,7 +23,11 @@ func NewServer(store db.Store) *Server {
 	users := router.Group("/users")
 	{
 		users.POST("/", middleware.RateLimitByIP(10, redis.RateLimitPerMinute), server.createUser)
-		users.GET("/:id/", middleware.RateLimitByIP(20, redis.RateLimitPerMinute), server.getUserById)
+		users.GET("/:id/",
+			middleware.RateLimitByIP(20, redis.RateLimitPerMinute),
+			middleware.IsLoggedIn(server.store),
+			middleware.IsAdmin(server.store),
+			server.getUserById)
 		users.POST("/activate/", server.ActivateUser)
 		users.GET("/validate-email-token/:token/", server.ValidateUserEmailToken)
 	}

@@ -48,3 +48,23 @@ func IsLoggedIn(store db.Store) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+func IsAdmin(store db.Store) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userInterface, exists := ctx.Get("loggedInUser")
+		if !exists {
+			ctx.JSON(http.StatusUnauthorized, ErrorResponse{Error: "You don't have permission to access this resource."})
+			ctx.Abort()
+			return
+		}
+
+		user := userInterface.(db.User)
+		if user.Role != db.UserRoleAdmin {
+			ctx.JSON(http.StatusUnauthorized, ErrorResponse{Error: "You don't have permission to access this resource."})
+			ctx.Abort()
+			return
+		}
+
+		ctx.Next()
+	}
+}
