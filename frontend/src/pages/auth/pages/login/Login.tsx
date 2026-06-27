@@ -57,6 +57,13 @@ const Login = () => {
   const handleSubmit: ComponentProps<"form">["onSubmit"] = async event => {
     event.preventDefault()
     setFormError(null)
+
+    if (!email.trim() || !password) {
+      setFormError("Please enter your email and password.")
+
+      return
+    }
+
     setSubmitting(true)
 
     try {
@@ -75,8 +82,8 @@ const Login = () => {
         dispatch(
           sessionActions.sessionMutation({
             user,
-            isAdmin: user.role === "admin",
             isUser: user.role === "user",
+            isAdmin: user.role === "admin",
           })
         )
 
@@ -141,12 +148,12 @@ const Login = () => {
                 }
               >
                 <Input
+                  autoFocus
                   type="email"
                   value={email}
-                  onChange={event => setEmail(event.target.value)}
-                  placeholder="you@example.com"
                   autoComplete="email"
-                  autoFocus
+                  placeholder="you@example.com"
+                  onChange={event => setEmail(event.target.value)}
                 />
               </InputGroup>
             </Field.Root>
@@ -161,10 +168,10 @@ const Login = () => {
                 }
                 endElement={
                   <IconButton
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    variant="ghost"
-                    size="xs"
                     me="-2"
+                    size="xs"
+                    variant="ghost"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                     onClick={() => setShowPassword(value => !value)}
                   >
                     {showPassword ? <LuEyeOff /> : <LuEye />}
@@ -172,24 +179,24 @@ const Login = () => {
                 }
               >
                 <Input
-                  type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={event => setPassword(event.target.value)}
                   placeholder="••••••••"
                   autoComplete="current-password"
+                  type={showPassword ? "text" : "password"}
+                  onChange={event => setPassword(event.target.value)}
                 />
               </InputGroup>
             </Field.Root>
 
             <Button
+              mt="2"
+              w="full"
+              size="lg"
               type="submit"
               colorPalette="brand"
-              size="lg"
-              w="full"
-              mt="2"
               loading={submitting}
               loadingText="Signing in…"
-              disabled={!email || !password}
+              disabled={email === "" || password === ""}
             >
               <LuLogIn />
               Sign in
