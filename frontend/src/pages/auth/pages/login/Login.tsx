@@ -23,8 +23,8 @@ import { Link as RouterLink, useNavigate } from "react-router"
 
 import { meQueryOptions, queryClient, useLogin } from "@/api"
 import { siteConfig } from "@/config/site"
+import { AccountRoutes } from "@/pages/account"
 import { AdminRoutes } from "@/pages/admin"
-import { AnonymousRoutes } from "@/pages/anonymous"
 import { UserRoutes } from "@/pages/user"
 import { useAppDispatch } from "@/store"
 import { sessionActions } from "@/store/slices"
@@ -89,8 +89,8 @@ const Login = () => {
           })
         )
 
-        // No dedicated user area yet, so non-admins land on the home page.
-        navigate(user.role === "admin" ? AdminRoutes.Dashboard.path : AnonymousRoutes.Home.path)
+        // Admins go to the admin area; everyone else to their account dashboard.
+        navigate(user.role === "admin" ? AdminRoutes.Dashboard.path : AccountRoutes.Dashboard.path)
       } catch (meError) {
         // The token worked but loading the user failed — roll back so we don't
         // sit in a half-authenticated state.

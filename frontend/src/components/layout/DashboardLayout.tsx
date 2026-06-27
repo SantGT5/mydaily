@@ -20,13 +20,14 @@ import { queryClient, useMe } from "@/api"
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { BELOW_HEADER_HEIGHT, HEADER_HEIGHT, SIDEBAR_WIDTH } from "@/config/layout"
 import { siteConfig } from "@/config/site"
+import { AccountRoutes } from "@/pages/account"
 import { AdminRoutes } from "@/pages/admin"
 import { AnonymousRoutes } from "@/pages/anonymous"
 import { AuthRoutes } from "@/pages/auth"
 import { useAppDispatch } from "@/store"
 import { sessionActions } from "@/store/slices"
 
-interface AdminNavItem {
+interface DashboardNavItem {
   label: string
   to: string
   icon: ReactNode
@@ -34,12 +35,18 @@ interface AdminNavItem {
   end?: boolean
 }
 
-const navItems: AdminNavItem[] = [
+// Sidebar links per role: admins manage the whole app, regular users get their
+// own account area. The layout below picks the right set from the user's role.
+const adminNavItems: DashboardNavItem[] = [
   { label: "Dashboard", to: AdminRoutes.Dashboard.path, icon: <LuLayoutDashboard />, end: true },
   { label: "Users", to: AdminRoutes.Users.path, icon: <LuUsers /> },
 ]
 
-function SidebarLink({ label, to, icon, end }: AdminNavItem) {
+const accountNavItems: DashboardNavItem[] = [
+  { label: "Dashboard", to: AccountRoutes.Dashboard.path, icon: <LuLayoutDashboard />, end: true },
+]
+
+function SidebarLink({ label, to, icon, end }: DashboardNavItem) {
   return (
     <NavLink to={to} end={end} style={{ display: "block", width: "100%" }}>
       {({ isActive }) => (
@@ -63,16 +70,20 @@ function SidebarLink({ label, to, icon, end }: AdminNavItem) {
 }
 
 /**
- * Shell for the admin area.
+ * Shell for the signed-in app, shared by admins and regular users.
  *
- * Deliberately distinct from the public `RootLayout`: a persistent branded
- * sidebar with an "Admin" badge makes it obvious at a glance that you're in the
- * privileged section rather than the normal user-facing app.
+ * A persistent branded sidebar makes it obvious you're inside the app rather
+ * than on the public marketing pages. The sidebar, the home-icon, and the
+ * "Admin" badge all adapt to the current user's role: admins get the privileged
+ * nav (+ badge), regular users get their `/account` nav with no badge.
  */
-export function AdminLayout() {
+export function DashboardLayout() {
   const { data: user } = useMe()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+
+  const isAdmin = user?.role === "admin"
+  const navItems = isAdmin ? adminNavItems : accountNavItems
 
   const handleSignOut = () => {
     dispatch(sessionActions.reset())
@@ -105,14 +116,16 @@ export function AdminLayout() {
       >
         <HStack gap="2" px="2" mb="6">
           <Icon color="brand.fg" boxSize="6">
-            <LuShieldCheck />
+            {isAdmin ? <LuShieldCheck /> : <LuLayoutDashboard />}
           </Icon>
           <Text fontWeight="bold" fontSize="lg" letterSpacing="tight">
             {siteConfig.name}
           </Text>
-          <Badge colorPalette="brand" size="sm">
-            Admin
-          </Badge>
+          {isAdmin && (
+            <Badge colorPalette="brand" size="sm">
+              Admin
+            </Badge>
+          )}
         </HStack>
 
         <VStack as="nav" align="stretch" gap="1">
@@ -126,7 +139,7 @@ export function AdminLayout() {
         <Separator mb="3" />
         <Box px="2" mb="3">
           <Text fontSize="sm" fontWeight="medium" lineClamp={1}>
-            {user?.full_name ?? "Admin"}
+            {user?.full_name ?? "Account"}
           </Text>
 
           <Text fontSize="xs" color="fg.muted" lineClamp={1}>
@@ -165,9 +178,11 @@ export function AdminLayout() {
           top="0"
           zIndex="1000"
         >
-          <Badge colorPalette="brand" display={{ base: "inline-flex", md: "none" }}>
-            Admin
-          </Badge>
+          {isAdmin && (
+            <Badge colorPalette="brand" display={{ base: "inline-flex", md: "none" }}>
+              Admin
+            </Badge>
+          )}
           <Spacer />
           <ColorModeButton />
         </Flex>

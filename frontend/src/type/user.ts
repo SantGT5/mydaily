@@ -1,6 +1,6 @@
 type CreateUserRequest = {
-  full_name: string
   email: string
+  full_name: string
   role: "user" | "admin"
 }
 
@@ -11,13 +11,13 @@ type ActivateUserRequest = {
 
 type UserResponse = {
   id: string
-  full_name: string
   email: string
-  role: "user" | "admin"
+  full_name: string
   is_active: boolean
-  is_email_verified: boolean
   created_at: string
   updated_at: string
+  role: "user" | "admin"
+  is_email_verified: boolean
 }
 
 export type { ActivateUserRequest, CreateUserRequest, UserResponse }

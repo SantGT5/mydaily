@@ -2,7 +2,7 @@ import { Avatar, Box, Menu, Portal, Text } from "@chakra-ui/react"
 
 import { type MouseEvent, useRef, useState } from "react"
 
-import { LuLogOut, LuUser } from "react-icons/lu"
+import { LuLayoutDashboard, LuLogOut, LuUser } from "react-icons/lu"
 import { useNavigate } from "react-router"
 
 import { queryClient } from "@/api"
@@ -115,8 +115,8 @@ export function UserMenu() {
             {(fullName || email) && <Menu.Separator />}
 
             <Menu.Item value="profile" onClick={handleProfile}>
-              <LuUser />
-              <Box flex="1">Profile</Box>
+              <LuLayoutDashboard />
+              <Box flex="1">Dashboard</Box>
             </Menu.Item>
             <Menu.Item
               value="logout"

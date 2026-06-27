@@ -1,6 +1,8 @@
 import { createBrowserRouter } from "react-router"
 
-import { AdminLayout, BlankLayout, RootLayout } from "@/components/layout"
+import { BlankLayout, DashboardLayout, RootLayout } from "@/components/layout"
+import { AccountRoutes } from "@/pages/account"
+import { AccountRouteTree } from "@/pages/account/routes/routes.account"
 import { AdminRoutes } from "@/pages/admin"
 import { AdminRouteTree } from "@/pages/admin/routes/routes.admin"
 import { AnonymousRoutes } from "@/pages/anonymous"
@@ -11,7 +13,7 @@ import { NotFound } from "@/pages/error"
 import { UserRoutes } from "@/pages/user"
 import { UserRouteTree } from "@/pages/user/routes/routes.user"
 
-import { adminRouteLoader, publicRouteLoader } from "./router.loader"
+import { accountRouteLoader, adminRouteLoader, publicRouteLoader } from "./router.loader"
 
 const router = createBrowserRouter([
   {
@@ -42,8 +44,15 @@ const router = createBrowserRouter([
     children: UserRouteTree,
   },
   {
+    path: AccountRoutes.Dashboard.path,
+    element: <DashboardLayout />,
+    loader: accountRouteLoader,
+    HydrateFallback: () => null,
+    children: AccountRouteTree,
+  },
+  {
     path: AdminRoutes.Dashboard.path,
-    element: <AdminLayout />,
+    element: <DashboardLayout />,
     loader: adminRouteLoader,
     HydrateFallback: () => null,
     children: AdminRouteTree,

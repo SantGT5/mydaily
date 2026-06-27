@@ -3,6 +3,7 @@ import { isAxiosError } from "axios"
 import { redirect } from "react-router"
 
 import { meQueryOptions, queryClient } from "@/api"
+import { AccountRoutes } from "@/pages/account"
 import { AuthRoutes } from "@/pages/auth"
 import { store } from "@/store"
 import { sessionActions } from "@/store/slices"
@@ -79,8 +80,8 @@ const adminRouteLoader = async () => {
 
   const user = result as Me | null
 
-  // TODO: once a regular-user area exists, redirect non-admins there instead.
-  if (user?.role !== "admin") return redirect(AuthRoutes.Login.path)
+  // Authenticated but not an admin — send them to their own account dashboard.
+  if (user?.role !== "admin") return redirect(AccountRoutes.Dashboard.path)
 
   return user
 }
