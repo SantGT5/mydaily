@@ -24,6 +24,7 @@ urls: ## Show the urls to the running applications
 	@echo "* RabbitMQ: https://mydaily.com/rabbitmq/"
 	@echo "*"
 	@echo "* Swagger: https://mydaily.com/api/swagger (local only)"
+	@echo "* frontend: https://mydaily.com/ (local only)"
 	@echo "*------\n"
 .PHONY: urls
 

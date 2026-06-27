@@ -67,3 +67,10 @@ repos:
         language: system
         pass_filenames: false
         files: \.go$
+      - id: frontend
+        name: frontend (eslint + tsc)
+        entry: bash -c "cd frontend && npm run quality"
+        language: system
+        require_serial: true
+        pass_filenames: false
+        files: ^frontend/

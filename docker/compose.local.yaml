@@ -19,11 +19,19 @@ services:
       context: ../
       dockerfile: docker/stack/worker/Dockerfile.local
 
+  frontend:
+    container_name: frontend
+    build:
+      context: ../
+      dockerfile: docker/stack/frontend/Dockerfile.local
+    networks:
+      - caddy
+    volumes:
+      - /app/node_modules
+      - ../frontend:/app
+
   caddy:
     volumes:
       - ./caddy/local/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
-
-volumes:
-  mailpit:

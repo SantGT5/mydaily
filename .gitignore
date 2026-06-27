@@ -1,47 +1,121 @@
-# Binaries for programs and plugins
-tmp
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+# Node.js dependencies
+/.pnp
+.pnp.js
+yarn.lock
+node_modules/
+pnpm-lock.yaml
+.yarn/install-state.gz
 
-# Test binary, built with `go test -c`
-*.test
+# vercel
+.vercel
 
-# Docs
-docs/
+# Build artifacts
+dist-ssr
+.out/
+dist/
+build/
+.next/
+.vercel/
 
-# Virtual Environment
-venv/
-env/
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+vite.config.d.ts
+vite.config.js
+
+# Environment files
 .env
-.vscode/
+.env.local
+.env.*.local
+.env.test.local
 
-# PostgreSQL
-*.pgsql
-*.pgsql-journal
-*.psql
-*.psql-journal
-*.pid
-pgdata/
+# Logs
+logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+lerna-debug.log*
+backend/docs
 
-# Ignore system and temporary files
-*.DS_Store
+# OS-specific files
+*.pem
 .DS_Store
 Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-*.tmp
-*.swp
 
-# Editor directories and files
+# IDE and Editor files
 .vscode/*
-!.vscode/extensions.json
-.idea
+.vscode/
+.idea/
 *.suo
+*.iml
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.sublime-project
+*.sublime-workspace
+!.vscode/extensions.json
+
+# Tests and Coverage
+jest/
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+temp_repo/
+*.tmp
+*.swp
+*.bak
+*.log
+*.out
+*.pid
+*.seed
+*.sqlite
+
+# Cache
+.cache/
+.pnpm-store/
+.next/cache/
+.ruff_cache/
+
+# Miscellaneous
+.history
+
+# Database files
+*.db
+*.sqlite3
+dump.sql
+dump.rdb
+pgdata/
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+.pycache_tmp/1
+.venv/
+__pycache__/
+*.pytest_cache/
+
+# FastAPI & Uvicorn
+instance/
+*.log
+*.pid
+*.sock
+
+# Docker
+*.tar
+.env.docker
+
+# PostgreSQL
+pgdata/
+postgres-data/
+
+# Ansible
+ansible/multipass
+
+# AI
+.claude
