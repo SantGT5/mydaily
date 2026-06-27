@@ -11,7 +11,7 @@ INSERT INTO
         created_at,
         updated_at
     )
-SELECT '2baefc96-1d63-42f4-b765-248003f18bb4'::uuid, '$2a$14$dmkKxp1BEQUuvzP.85ySR.wqnr5Rwwad.abgdlkT1sRl2ONOwCAIi', 'Gian Lucas', 'gianspf@gmail.com', TRUE, TRUE, 'admin'::user_role, NOW(), NOW()
+SELECT '2baefc96-1d63-42f4-b765-248003f18bb4'::uuid, '$2a$14$SEgWnRetRYAVsLs03ZEoDOg7.kW04HnHMs5IfQodv8eX1Dh.SfYGG', 'Gian Lucas', 'gianspf@gmail.com', TRUE, TRUE, 'admin'::user_role, NOW(), NOW()
 WHERE
     NOT EXISTS (
         SELECT 1

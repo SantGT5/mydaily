@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/SantGT5/mydaily/config"
@@ -89,7 +88,6 @@ func (server *Server) Me(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Unauthorized"})
 		return
 	}
-	fmt.Println(userData)
 
 	ctx.JSON(http.StatusOK, UserToResponse(userData))
 }

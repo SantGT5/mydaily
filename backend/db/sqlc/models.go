@@ -55,6 +55,24 @@ func (ns NullUserRole) Value() (driver.Value, error) {
 	return string(ns.UserRole), nil
 }
 
+type GithubCredential struct {
+	ID               uuid.UUID      `json:"id"`
+	UserID           uuid.UUID      `json:"user_id"`
+	GithubID         int64          `json:"github_id"`
+	GithubUsername   string         `json:"github_username"`
+	GithubName       sql.NullString `json:"github_name"`
+	GithubEmail      sql.NullString `json:"github_email"`
+	GithubAvatarUrl  sql.NullString `json:"github_avatar_url"`
+	GithubProfileUrl sql.NullString `json:"github_profile_url"`
+	AccessToken      string         `json:"access_token"`
+	TokenType        string         `json:"token_type"`
+	Scope            sql.NullString `json:"scope"`
+	RefreshToken     sql.NullString `json:"refresh_token"`
+	TokenExpiresAt   sql.NullTime   `json:"token_expires_at"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+}
+
 type User struct {
 	ID              uuid.UUID      `json:"id"`
 	HashedPassword  sql.NullString `json:"hashed_password"`

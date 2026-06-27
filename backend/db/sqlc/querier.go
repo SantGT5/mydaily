@@ -12,7 +12,9 @@ import (
 
 type Querier interface {
 	ActivateUser(ctx context.Context, arg ActivateUserParams) (User, error)
+	CreateOrUpdateGithubCredentials(ctx context.Context, arg CreateOrUpdateGithubCredentialsParams) (GithubCredential, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	GetGithubCredentialsByUserID(ctx context.Context, userID uuid.UUID) (GithubCredential, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	GetUsers(ctx context.Context, arg GetUsersParams) ([]GetUsersRow, error)

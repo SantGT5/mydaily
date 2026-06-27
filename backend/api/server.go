@@ -38,6 +38,12 @@ func NewServer(store db.Store) *Server {
 		auth.GET("/me/", middleware.IsLoggedIn(server.store), server.Me)
 	}
 
+	connect := router.Group("/connect")
+	{
+		connect.GET("/github/", middleware.IsLoggedIn(server.store), server.ConnectGithub)
+		connect.GET("/github/callback/", server.ConnectGithubCallback)
+	}
+
 	if config.IsDebug {
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
