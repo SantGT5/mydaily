@@ -205,3 +205,150 @@ func (server *Server) ConnectGithubCallback(ctx *gin.Context) {
 		TokenType:  token.TokenType,
 	})
 }
+
+// GithubReposResponse wraps the list of repositories for the connected account.
+type GithubReposResponse struct {
+	Repos []extensions.GithubRepo `json:"repos"`
+}
+
+// GithubCommitsResponse wraps the list of commits for a repository.
+type GithubCommitsResponse struct {
+	Commits []extensions.GithubCommit `json:"commits"`
+}
+
+// GetReposRequest captures the optional pagination query params.
+type GetReposRequest struct {
+	Page    int `form:"page"`
+	PerPage int `form:"per_page"`
+}
+
+// GetCommitsRequest captures the query filters for listing commits.
+type GetCommitsRequest struct {
+	RepoID  int64  `form:"repo_id" binding:"required"`
+	From    string `form:"from"`
+	To      string `form:"to"`
+	Page    int    `form:"page"`
+	PerPage int    `form:"per_page"`
+}
+
+// parseGithubDate accepts either an RFC3339 timestamp or a plain YYYY-MM-DD
+// date. An empty string yields the zero time, which callers treat as "no filter".
+func parseGithubDate(value string) (time.Time, error) {
+	if value == "" {
+		return time.Time{}, nil
+	}
+	if t, err := time.Parse(time.RFC3339, value); err == nil {
+		return t, nil
+	}
+	return time.Parse("2006-01-02", value)
+}
+
+// @Summary List GitHub repositories
+// @Description Lists repositories for the connected GitHub account, most recently updated first
+// @Tags github
+// @Produce json
+// @Param page query int false "Page number for pagination"
+// @Param per_page query int false "Results per page (max 100)"
+// @Success 200 {object} GithubReposResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /connect/github/repos/ [get]
+// @Security X-Session
+func (server *Server) GetRepos(ctx *gin.Context) {
+	user, ok := ctx.Get("loggedInUser")
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Could not get user ID."})
+		return
+	}
+
+	userData, ok := user.(db.User)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Unauthorized"})
+		return
+	}
+
+	var req GetReposRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid query params."})
+		return
+	}
+
+	credentials, err := server.store.GetGithubCredentialsByUserID(ctx, userData.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Something went wrong authenticating github."})
+		return
+	}
+
+	repos, err := extensions.ListGithubRepos(ctx, credentials.AccessToken, req.Page, req.PerPage)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Could not fetch GitHub repositories."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, GithubReposResponse{Repos: repos})
+}
+
+// @Summary List GitHub commits
+// @Description Lists commits for a connected GitHub repository, optionally filtered by a date range
+// @Tags github
+// @Produce json
+// @Param repo_id query int true "GitHub repository ID"
+// @Param from query string false "Only include commits after this date (RFC3339 or YYYY-MM-DD)"
+// @Param to query string false "Only include commits before this date (RFC3339 or YYYY-MM-DD)"
+// @Param page query int false "Page number for pagination"
+// @Param per_page query int false "Results per page (max 100)"
+// @Success 200 {object} GithubCommitsResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /connect/github/commits/ [get]
+// @Security X-Session
+func (server *Server) GetCommits(ctx *gin.Context) {
+	user, ok := ctx.Get("loggedInUser")
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Could not get user ID."})
+		return
+	}
+
+	userData, ok := user.(db.User)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Unauthorized"})
+		return
+	}
+
+	var req GetCommitsRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid or missing query params. 'repo_id' is required."})
+		return
+	}
+
+	since, err := parseGithubDate(req.From)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid 'from' date. Use RFC3339 or YYYY-MM-DD."})
+		return
+	}
+
+	until, err := parseGithubDate(req.To)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid 'to' date. Use RFC3339 or YYYY-MM-DD."})
+		return
+	}
+
+	credentials, err := server.store.GetGithubCredentialsByUserID(ctx, userData.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Something went wrong authenticating github."})
+		return
+	}
+
+	commits, err := extensions.ListGithubCommits(ctx, credentials.AccessToken, req.RepoID, extensions.GithubCommitsFilter{
+		Since:   since,
+		Until:   until,
+		Page:    req.Page,
+		PerPage: req.PerPage,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Could not fetch GitHub commits."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, GithubCommitsResponse{Commits: commits})
+}

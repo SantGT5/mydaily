@@ -42,6 +42,8 @@ func NewServer(store db.Store) *Server {
 	{
 		connect.GET("/github/", middleware.IsLoggedIn(server.store), server.ConnectGithub)
 		connect.GET("/github/callback/", server.ConnectGithubCallback)
+		connect.GET("/github/repos/", middleware.IsLoggedIn(server.store), server.GetRepos)
+		connect.GET("/github/commits/", middleware.IsLoggedIn(server.store), server.GetCommits)
 	}
 
 	if config.IsDebug {
