@@ -1,4 +1,5 @@
 export * from "./AdminLayout"
+export * from "./BlankLayout"
 export * from "./Footer"
 export * from "./Header"
 export * from "./Logo"

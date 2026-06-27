@@ -78,9 +78,9 @@ func (server *Server) createUser(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param token path string true "Token"
-// @Success 200 {object} UserResponse
-// @Failure 400 {object} ErrorResponse
-// @Failure 500 {object} ErrorResponse
+// @Success 200 {boolean} true
+// @Failure 400 {boolean} false
+// @Failure 500 {boolean} false
 // @Router /users/validate-email-token/{token}/ [get]
 // @Tags users
 func (server *Server) ValidateUserEmailToken(ctx *gin.Context) {

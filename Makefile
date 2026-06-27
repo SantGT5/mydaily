@@ -40,6 +40,9 @@ install: install/ci ## Install pre commit & npm dependencies & create .env file
 	@pre-commit install --hook-type pre-commit --hook-type commit-msg
 
 install/ci: ## Install dependencies and create .env file
+	@echo "\nInstalling frontend npm dependencies"
+	@cd frontend && npm install
+
 	@if [ ! -e .env ]; then \
 		cp .env.example .env && echo "\nFile .env created"; \
 	else \

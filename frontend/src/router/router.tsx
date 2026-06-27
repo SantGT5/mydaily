@@ -1,12 +1,12 @@
 import { createBrowserRouter } from "react-router"
 
-import { AdminLayout, RootLayout } from "@/components/layout"
+import { AdminLayout, BlankLayout, RootLayout } from "@/components/layout"
 import { AdminRoutes } from "@/pages/admin"
 import { AdminRouteTree } from "@/pages/admin/routes/routes.admin"
 import { AnonymousRoutes } from "@/pages/anonymous"
 import { AnonymousRouteTree } from "@/pages/anonymous/routes/routes.anonymous"
 import { AuthRoutes } from "@/pages/auth"
-import { AuthRouteTree } from "@/pages/auth/routes/routes.auth"
+import { AuthActivateRouteTree, AuthRouteTree } from "@/pages/auth/routes/routes.auth"
 import { NotFound } from "@/pages/error"
 import { UserRoutes } from "@/pages/user"
 import { UserRouteTree } from "@/pages/user/routes/routes.user"
@@ -26,6 +26,13 @@ const router = createBrowserRouter([
     loader: publicRouteLoader,
     HydrateFallback: () => null,
     children: AuthRouteTree,
+  },
+  {
+    path: AuthRoutes.activeAccount.path,
+    element: <BlankLayout />,
+    loader: publicRouteLoader,
+    HydrateFallback: () => null,
+    children: AuthActivateRouteTree,
   },
   {
     path: UserRoutes.SignUp.path,

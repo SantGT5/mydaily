@@ -1,5 +1,3 @@
-import { AuthRoutes } from "./routes.config"
-
 const AuthRouteTree = [
   {
     index: true,
@@ -9,8 +7,13 @@ const AuthRouteTree = [
       return { Component: Login }
     },
   },
+]
+
+// Mounted separately from `AuthRouteTree` because the activation flow uses the
+// chrome-less `BlankLayout` (no header/footer) rather than the shared `RootLayout`.
+const AuthActivateRouteTree = [
   {
-    path: AuthRoutes.activeAccount.path,
+    index: true,
     lazy: async () => {
       const { ActiveAccount } = await import("../pages/active-account/ActiveAccount")
 
@@ -19,4 +22,4 @@ const AuthRouteTree = [
   },
 ]
 
-export { AuthRouteTree }
+export { AuthActivateRouteTree, AuthRouteTree }

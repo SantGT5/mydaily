@@ -4,6 +4,11 @@ type CreateUserRequest = {
   role: "user" | "admin"
 }
 
+type ActivateUserRequest = {
+  token: string
+  password: string
+}
+
 type UserResponse = {
   id: string
   full_name: string
@@ -15,4 +20,4 @@ type UserResponse = {
   updated_at: string
 }
 
-export type { CreateUserRequest, UserResponse }
+export type { ActivateUserRequest, CreateUserRequest, UserResponse }

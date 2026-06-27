@@ -3,9 +3,9 @@
  */
 export const siteConfig = {
   /** Short name shown in the header/logo and footer. */
-  name: "My Daily",
+  name: "MyDaily",
   /** Full title used in the browser tab and the home hero. */
-  title: "My Daily",
+  title: "MyDaily",
   /** One-line description used on the home page and meta tags. */
   description: "Turn your GitHub commits into an effortless daily standup report.",
   /** Tagline shown under the hero heading on the home page. */

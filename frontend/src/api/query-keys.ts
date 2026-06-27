@@ -14,6 +14,12 @@ const queryKeys = {
     me: () => [...queryKeys.auth.all, "me"] as const,
   },
 
+  user: {
+    all: ["user"] as const,
+    validateEmailToken: (token: string) =>
+      [...queryKeys.user.all, "validate-email-token", token] as const,
+  },
+
   // Example for a future paginated resource — each (page, perPage) combo is its
   // own cache entry, and `repos.all` invalidates every page at once:
   //
