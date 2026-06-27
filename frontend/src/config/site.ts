@@ -7,9 +7,10 @@ export const siteConfig = {
   /** Full title used in the browser tab and the home hero. */
   title: "My Daily",
   /** One-line description used on the home page and meta tags. */
-  description: "",
+  description: "Turn your GitHub commits into an effortless daily standup report.",
   /** Tagline shown under the hero heading on the home page. */
-  tagline: "",
+  tagline:
+    "Connect your GitHub, track your commits, and get a daily report you can read straight from your morning meeting.",
   /** Link to the project's source repository. */
   github: "https://github.com/SantGT5/mydaily",
 } as const

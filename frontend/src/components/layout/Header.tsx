@@ -1,11 +1,15 @@
-import { Box, Flex, HStack, IconButton, Spacer } from "@chakra-ui/react"
+import { Box, Button, Flex, HStack, IconButton, Spacer } from "@chakra-ui/react"
 
-import { LuMenu } from "react-icons/lu"
+import { LuLogIn, LuMenu } from "react-icons/lu"
+import { Link as RouterLink } from "react-router"
 
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { HEADER_HEIGHT } from "@/config/layout"
+import { AuthRoutes } from "@/pages/auth"
+import { useAppSelector } from "@/store"
 
 import { Logo } from "./Logo"
+import { UserMenu } from "./UserMenu"
 
 interface HeaderProps {
   /** Called when the mobile menu button is pressed. Omit to hide the button. */
@@ -13,6 +17,10 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuOpen }: HeaderProps) {
+  // A truthy session token is the app-wide signal that someone is signed in
+  // (see the route loaders). Redux is rehydrated before render via PersistGate.
+  const isLoggedIn = useAppSelector(state => Boolean(state.session.session))
+
   return (
     <Box
       as="header"
@@ -43,8 +51,18 @@ export function Header({ onMenuOpen }: HeaderProps) {
         )}
         <Logo />
         <Spacer />
-        <HStack gap="1">
+        <HStack gap={{ base: "1", sm: "2" }}>
           <ColorModeButton />
+          {isLoggedIn ? (
+            <UserMenu />
+          ) : (
+            <Button asChild colorPalette="brand" size="sm">
+              <RouterLink to={AuthRoutes.Login.path}>
+                <LuLogIn />
+                Log in
+              </RouterLink>
+            </Button>
+          )}
         </HStack>
       </Flex>
     </Box>
