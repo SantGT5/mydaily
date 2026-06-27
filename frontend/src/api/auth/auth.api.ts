@@ -1,5 +1,5 @@
 import { http } from "@/api/http"
-import { Me } from "@/type"
+import { LoginRequest, LoginResponse, Me } from "@/type"
 
 /**
  * GET /auth/me/ — the currently authenticated user.
@@ -14,4 +14,17 @@ const getMe = async (): Promise<Me> => {
   return data
 }
 
-export { getMe }
+/**
+ * POST /auth/login/ — exchange email + password for a session token.
+ *
+ * The returned `session_token` is what the axios interceptor sends as the
+ * `X-Session` header on every subsequent request, so the caller stores it in
+ * the Redux session slice before loading the current user.
+ */
+const login = async (payload: LoginRequest): Promise<LoginResponse> => {
+  const { data } = await http.post<LoginResponse>("/auth/login/", payload)
+
+  return data
+}
+
+export { getMe, login }

@@ -2,16 +2,16 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 type InitState = {
   session: string
+  isUser: boolean
   isAdmin: boolean
-  isManager: boolean
   user: Partial<Record<string, string | boolean>>
 }
 
 const initialState: InitState = {
   user: {},
   session: "",
+  isUser: false,
   isAdmin: false,
-  isManager: false,
 }
 
 const sessionSlice = createSlice({

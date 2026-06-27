@@ -1,8 +1,8 @@
-import { queryOptions, useQuery } from "@tanstack/react-query"
+import { queryOptions, useMutation, useQuery } from "@tanstack/react-query"
 
 import { queryKeys } from "@/api/query-keys"
 
-import { getMe } from "./auth.api"
+import { getMe, login } from "./auth.api"
 
 /**
  * Query options for the current user.
@@ -23,4 +23,13 @@ const meQueryOptions = () =>
 /** Read the current user inside a component. */
 const useMe = () => useQuery(meQueryOptions())
 
-export { meQueryOptions, useMe }
+/**
+ * Authenticate with email + password.
+ *
+ * Intentionally just the network call — storing the returned token in Redux,
+ * loading the user and navigating are the caller's job, since those side
+ * effects differ by where login is triggered from.
+ */
+const useLogin = () => useMutation({ mutationFn: login })
+
+export { meQueryOptions, useLogin, useMe }
