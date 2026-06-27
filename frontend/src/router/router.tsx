@@ -8,6 +8,8 @@ import { AnonymousRouteTree } from "@/pages/anonymous/routes/routes.anonymous"
 import { AuthRoutes } from "@/pages/auth"
 import { AuthRouteTree } from "@/pages/auth/routes/routes.auth"
 import { NotFound } from "@/pages/error"
+import { UserRoutes } from "@/pages/user"
+import { UserRouteTree } from "@/pages/user/routes/routes.user"
 
 import { adminRouteLoader, publicRouteLoader } from "./router.loader"
 
@@ -24,6 +26,13 @@ const router = createBrowserRouter([
     loader: publicRouteLoader,
     HydrateFallback: () => null,
     children: AuthRouteTree,
+  },
+  {
+    path: UserRoutes.SignUp.path,
+    element: <RootLayout />,
+    loader: publicRouteLoader,
+    HydrateFallback: () => null,
+    children: UserRouteTree,
   },
   {
     path: AdminRoutes.Dashboard.path,

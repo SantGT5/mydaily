@@ -1,11 +1,12 @@
 import { Box, Button, Flex, HStack, IconButton, Spacer } from "@chakra-ui/react"
 
-import { LuLogIn, LuMenu } from "react-icons/lu"
+import { LuLogIn, LuMenu, LuUserPlus } from "react-icons/lu"
 import { Link as RouterLink } from "react-router"
 
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { HEADER_HEIGHT } from "@/config/layout"
 import { AuthRoutes } from "@/pages/auth"
+import { UserRoutes } from "@/pages/user"
 import { useAppSelector } from "@/store"
 
 import { Logo } from "./Logo"
@@ -56,12 +57,20 @@ export function Header({ onMenuOpen }: HeaderProps) {
           {isLoggedIn ? (
             <UserMenu />
           ) : (
-            <Button asChild colorPalette="brand" size="sm">
-              <RouterLink to={AuthRoutes.Login.path}>
-                <LuLogIn />
-                Log in
-              </RouterLink>
-            </Button>
+            <>
+              <Button asChild variant="outline" size="sm">
+                <RouterLink to={AuthRoutes.Login.path}>
+                  <LuLogIn />
+                  Log in
+                </RouterLink>
+              </Button>
+              <Button asChild colorPalette="brand" size="sm">
+                <RouterLink to={UserRoutes.SignUp.path}>
+                  <LuUserPlus />
+                  Sign up
+                </RouterLink>
+              </Button>
+            </>
           )}
         </HStack>
       </Flex>

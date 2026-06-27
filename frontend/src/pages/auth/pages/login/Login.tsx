@@ -9,6 +9,7 @@ import {
   IconButton,
   Input,
   InputGroup,
+  Link,
   Stack,
   Text,
   VStack,
@@ -18,12 +19,13 @@ import { isAxiosError } from "axios"
 import { type ComponentProps, useState } from "react"
 
 import { LuEye, LuEyeOff, LuLock, LuLogIn, LuMail } from "react-icons/lu"
-import { useNavigate } from "react-router"
+import { Link as RouterLink, useNavigate } from "react-router"
 
 import { meQueryOptions, queryClient, useLogin } from "@/api"
 import { siteConfig } from "@/config/site"
 import { AdminRoutes } from "@/pages/admin"
 import { AnonymousRoutes } from "@/pages/anonymous"
+import { UserRoutes } from "@/pages/user"
 import { useAppDispatch } from "@/store"
 import { sessionActions } from "@/store/slices"
 
@@ -203,6 +205,13 @@ const Login = () => {
             </Button>
           </Stack>
         </form>
+
+        <Text mt="6" textAlign="center" color="fg.muted" fontSize="sm">
+          Don't have an account?{" "}
+          <Link asChild colorPalette="brand" fontWeight="medium">
+            <RouterLink to={UserRoutes.SignUp.path}>Sign up</RouterLink>
+          </Link>
+        </Text>
       </Box>
     </Container>
   )
