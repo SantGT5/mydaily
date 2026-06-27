@@ -43,9 +43,9 @@ func (server *Server) createUser(ctx *gin.Context) {
 	}
 
 	arg := db.CreateUserParams{
-		FullName: req.FullName,
+		Role:     "user",
 		Email:    req.Email,
-		Role:     db.UserRole(req.Role),
+		FullName: req.FullName,
 	}
 
 	user, err := server.store.CreateUser(ctx, arg)
@@ -61,9 +61,9 @@ func (server *Server) createUser(ctx *gin.Context) {
 	}
 
 	err = mq.PostMessage(mq.QueueActivateUserAccountEmail, map[string]any{
+		"token":     token,
 		"email":     user.Email,
 		"full_name": user.FullName,
-		"token":     token,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Something went wrong while sending the welcome email."})

@@ -1,6 +1,6 @@
 import { Avatar, Box, Menu, Portal, Text } from "@chakra-ui/react"
 
-import { useRef, useState } from "react"
+import { type MouseEvent, useRef, useState } from "react"
 
 import { LuLogOut, LuUser } from "react-icons/lu"
 import { useNavigate } from "react-router"
@@ -14,9 +14,13 @@ import { sessionActions } from "@/store/slices"
 /**
  * Account control shown in the header when a user is signed in.
  *
- * An avatar button that reveals a menu on hover (and on click/focus, so it
- * stays keyboard accessible). A short delay before closing lets the pointer
- * travel from the trigger to the portaled menu without it disappearing.
+ * An avatar button that reveals a menu on hover (and on click; the trigger
+ * also opens it via Enter/Space/Arrow keys, so it stays keyboard accessible).
+ * A short delay before closing lets the pointer travel from the trigger to the
+ * portaled menu without it disappearing.
+ *
+ * Note: we intentionally do NOT open on `onFocus`. Closing the menu returns
+ * focus to the trigger, which would re-fire `onFocus` and reopen it in a loop.
  */
 export function UserMenu() {
   const dispatch = useAppDispatch()
@@ -46,6 +50,14 @@ export function UserMenu() {
     closeTimer.current = setTimeout(() => setOpen(false), 150)
   }
 
+  // The menu opens on hover, so a click on the already-open trigger would just
+  // toggle it shut. Swallow that click in the capture phase (which runs before
+  // Ark's bubble-phase handler, and its trigger bails when defaultPrevented).
+  // We only block while open, so click-to-open still works on touch devices.
+  const keepOpenOnTriggerClick = (event: MouseEvent) => {
+    if (open) event.preventDefault()
+  }
+
   const handleProfile = () => {
     setOpen(false)
     // TODO: point at a dedicated profile page once one exists.
@@ -65,14 +77,15 @@ export function UserMenu() {
       onOpenChange={event => setOpen(event.open)}
       positioning={{ placement: "bottom-end" }}
     >
-      <Menu.Trigger
-        asChild
-        rounded="full"
-        onMouseEnter={openMenu}
-        onMouseLeave={scheduleClose}
-        onFocus={openMenu}
-      >
-        <Box as="button" aria-label="Account menu" cursor="pointer" rounded="full" lineHeight="0">
+      <Menu.Trigger asChild rounded="full" onMouseEnter={openMenu} onMouseLeave={scheduleClose}>
+        <Box
+          as="button"
+          aria-label="Account menu"
+          cursor="pointer"
+          rounded="full"
+          lineHeight="0"
+          onClickCapture={keepOpenOnTriggerClick}
+        >
           <Avatar.Root size="sm" colorPalette="brand">
             <Avatar.Fallback name={fullName}>
               <LuUser />

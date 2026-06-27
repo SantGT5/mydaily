@@ -1,10 +1,10 @@
 import {
   Badge,
   Box,
-  Button,
   Flex,
   HStack,
   Icon,
+  IconButton,
   Separator,
   Spacer,
   Text,
@@ -13,7 +13,7 @@ import {
 
 import type { ReactNode } from "react"
 
-import { LuLayoutDashboard, LuLogOut, LuShieldCheck, LuUsers } from "react-icons/lu"
+import { LuHouse, LuLayoutDashboard, LuLogOut, LuShieldCheck, LuUsers } from "react-icons/lu"
 import { NavLink, Outlet, ScrollRestoration, useNavigate } from "react-router"
 
 import { queryClient, useMe } from "@/api"
@@ -21,6 +21,7 @@ import { ColorModeButton } from "@/components/ui/color-mode"
 import { BELOW_HEADER_HEIGHT, HEADER_HEIGHT, SIDEBAR_WIDTH } from "@/config/layout"
 import { siteConfig } from "@/config/site"
 import { AdminRoutes } from "@/pages/admin"
+import { AnonymousRoutes } from "@/pages/anonymous"
 import { AuthRoutes } from "@/pages/auth"
 import { useAppDispatch } from "@/store"
 import { sessionActions } from "@/store/slices"
@@ -79,6 +80,10 @@ export function AdminLayout() {
     navigate(AuthRoutes.Login.path)
   }
 
+  const handleGoHome = () => {
+    navigate(AnonymousRoutes.Home.path)
+  }
+
   return (
     <Flex minH="100dvh">
       <ScrollRestoration />
@@ -123,14 +128,26 @@ export function AdminLayout() {
           <Text fontSize="sm" fontWeight="medium" lineClamp={1}>
             {user?.full_name ?? "Admin"}
           </Text>
+
           <Text fontSize="xs" color="fg.muted" lineClamp={1}>
             {user?.email}
           </Text>
         </Box>
-        <Button variant="outline" size="sm" justifyContent="flex-start" onClick={handleSignOut}>
-          <LuLogOut />
-          Sign out
-        </Button>
+
+        <HStack gap="2">
+          <IconButton
+            variant="outline"
+            size="sm"
+            aria-label="Go to home page"
+            onClick={handleGoHome}
+          >
+            <LuHouse />
+          </IconButton>
+
+          <IconButton variant="outline" size="sm" aria-label="Sign out" onClick={handleSignOut}>
+            <LuLogOut />
+          </IconButton>
+        </HStack>
       </Flex>
 
       {/* Main column */}
